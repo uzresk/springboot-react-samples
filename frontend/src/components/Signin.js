@@ -1,24 +1,19 @@
 import React from 'react';
-
-import {useHistory} from 'react-router-dom';
-
+import {Link, useHistory} from "react-router-dom";
 import {useForm} from "react-hook-form";
-
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Container from "@material-ui/core/Container";
+import axios from "axios";
 import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
+import {makeStyles} from "@material-ui/core";
+import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Avatar from "@material-ui/core/Avatar";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import {makeStyles} from "@material-ui/core";
-import LockIcon from "@material-ui/icons/Lock";
-import {Link} from "react-router-dom";
 
-import axios from 'axios';
-
-const Signup = () => {
+const Signin = () => {
 
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
@@ -76,10 +71,10 @@ const Signup = () => {
             <CssBaseline/>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockIcon/>
+                    <AccountCircleIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Sign in
                 </Typography>
                 <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={2}>
@@ -93,19 +88,6 @@ const Signup = () => {
                                        variant="outlined"
                                        fullWidth
                                        autoFocus
-                                       required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField id="email"
-                                       label="Email Address"
-                                       name="email"
-                                       inputRef={register({required: true})}
-                                       error={!!errors.email}
-                                       helperText={errors.email ? '必ず入力してください' : ''}
-                                       variant="outlined"
-                                       fullWidth
-                                       autoComplete="email"
                                        required
                             />
                         </Grid>
@@ -130,12 +112,12 @@ const Signup = () => {
                             color="primary"
                             className={classes.submit}
                             disabled={!formState.dirty || formState.isSubmitting}>
-                        Sign Up
+                        Sign In
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link to="/" variant="body2">
-                                Already have an account? Sign in
+                            <Link to="/signup" variant="body2">
+                                Register new membership
                             </Link>
                         </Grid>
                     </Grid>
@@ -148,4 +130,5 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Signin;
+
