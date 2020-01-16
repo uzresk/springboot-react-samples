@@ -18,6 +18,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    testCompileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -36,4 +41,4 @@ task buildReact(type: YarnTask) {
     args = ['build']
 }
 
-compileJava.dependsOn buildReact
+//compileJava.dependsOn buildReact
