@@ -1,4 +1,4 @@
-package jp.gr.java_conf.uzresk.samples.springbootreact.controller.signup;
+package jp.gr.java_conf.uzresk.samples.springbootreact.controller.signin;
 
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -6,11 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.Serializable;
 
 @Data
-public class SignupForm implements Serializable {
+public class SigninForm implements Serializable {
 
     private String userId;
-
-    private String email;
 
     private String password;
 
