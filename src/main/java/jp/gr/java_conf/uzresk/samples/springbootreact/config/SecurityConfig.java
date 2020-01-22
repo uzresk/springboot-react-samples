@@ -4,32 +4,40 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final long EXPIRATION_TIME = 3_600_000; // 1hours
-    public static final String SECRET = "springbootreactsecret";
-    public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String HEADER_STRING = "Authorization";
-    public static final String CLAIM_ROLE = "role";
-
     private final UserDetailsService userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .cors()  // TODO 同じドメイン上でReactを動かせばいらない？
-                .and().authorizeRequests()
+
+        // JSON Authentication
+        RestAuthenticationFilter filter = new RestAuthenticationFilter(authenticationManager());
+        http.addFilterAt(filter, RestAuthenticationFilter.class);
+        // Spring Securityデフォルトでは、アクセス権限（ROLE）設定したページに未認証状態でアクセスすると403を返すので、401を返すように変更
+        http.exceptionHandling().authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+        // 今回は、403エラー時にHTTP Bodyを返さないように設定
+        http.exceptionHandling().accessDeniedHandler((req, res, ex) -> res.setStatus(HttpServletResponse.SC_FORBIDDEN));
+
+        http.authorizeRequests()
                 .antMatchers(
                         "/",
                         "/public/**",
@@ -40,15 +48,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/static/**",
                         "/api/signup",
                         "/api/signin").permitAll()
-                .antMatchers("/api/user/top").hasAnyRole("USER")
-                .antMatchers("/api/admin/top").hasAnyRole("ADMIN")
-                .anyRequest().authenticated()
-                .and().logout()
-                .and().csrf().disable()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .anyRequest().authenticated();
+//                .antMatchers("/api/user/top").hasAnyRole("USER")
+//                .antMatchers("/api/admin/top").hasAnyRole("ADMIN")
+//        http.formLogin()
+//                .loginPage("/")
+//                .loginProcessingUrl("/api/signin")
+//                .defaultSuccessUrl("/top", false)
+//                .failureUrl("/?error=true");
+        http.logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpServletResponse.SC_OK))
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true);
+
+        // TODO CORS
+        http.csrf()
+                .disable()
+                .cors()
+                .configurationSource(corsConfigurationSource());
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
+        corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
+        corsConfiguration.setAllowCredentials(true);
+
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+
+        UrlBasedCorsConfigurationSource corsSource = new UrlBasedCorsConfigurationSource();
+        corsSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return corsSource;
     }
 
     @Autowired

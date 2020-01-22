@@ -1,7 +1,6 @@
-import React from 'react';
-import {Link, useHistory} from "react-router-dom";
+import React, {useContext} from 'react';
+import {Link, useHistory, useLocation} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import axios from "axios";
 import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core";
 import Container from "@material-ui/core/Container";
@@ -12,23 +11,30 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import AppContext from "../contexts/AppContexts";
+import {LOGIN} from "../actions";
 
 const Signin = () => {
 
+    const {state, dispatch} = useContext(AppContext);
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
+    const location = useLocation();
+    let {from} = location.state || {from: {pathname: "/top"}};
 
     const onSubmit = async data => {
-        const json = JSON.stringify(data)
-        console.log(json);
-        let axiosConfig = {
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-                "Access-Control-Allow-Origin": "*",
-            }
-        };
-        await axios.post("http://localhost:8080/api/signup", json, axiosConfig);
-        history.push('/');
+        // const json = JSON.stringify(data)
+        // console.log(json);
+        // let axiosConfig = {
+        //     headers: {
+        //         'Content-Type': 'application/json;charset=UTF-8',
+        //     }
+        // };
+        // await axios.post("/api/signin", json, axiosConfig);
+        // history.push('/top');
+        dispatch({type: LOGIN});
+        console.log(from);
+        history.replace(from);
     };
 
     function Copyright() {

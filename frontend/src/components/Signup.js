@@ -23,16 +23,16 @@ const Signup = () => {
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
 
-    const onSubmit = async data => {
+    const onSubmit = async (data, e) => {
+        e.preventDefault();
         const json = JSON.stringify(data);
         console.log(json);
         let axiosConfig = {
             headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-                "Access-Control-Allow-Origin": "*",
+                'content-type': 'application/json;charset=utf-8',
             }
         };
-        await axios.post("http://localhost:8080/api/signup", json, axiosConfig);
+        await axios.post("/api/signup", json, axiosConfig);
         history.push('/');
     };
 
