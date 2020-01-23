@@ -27,7 +27,8 @@ const Signin = () => {
     const location = useLocation();
     let {from} = location.state || {from: {pathname: "/top"}};
 
-    const onSubmit = useCallback(async data => {
+    const onSubmit = useCallback(async (data, e) => {
+        e.preventDefault();
         let axiosConfig = {
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
