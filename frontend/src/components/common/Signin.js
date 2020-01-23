@@ -1,53 +1,60 @@
-import React from 'react';
-
-import {useHistory} from 'react-router-dom';
-
-import {useForm} from "react-hook-form";
-
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Avatar from "@material-ui/core/Avatar";
-import Box from "@material-ui/core/Box";
-import {makeStyles} from "@material-ui/core";
-import LockIcon from "@material-ui/icons/Lock";
-import {Link} from "react-router-dom";
-
 import axios from 'axios';
 
-const Signup = () => {
+import React, {useCallback, useContext, useState} from 'react';
+import {Link, useHistory, useLocation} from "react-router-dom";
+import {useForm} from "react-hook-form";
 
+import Typography from "@material-ui/core/Typography";
+import {makeStyles} from "@material-ui/core";
+import Container from "@material-ui/core/Container";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Avatar from "@material-ui/core/Avatar";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
+import Snackbar from "@material-ui/core/Snackbar"
+import Alert from "@material-ui/lab/Alert"
+
+import AppContext from "../../contexts/AppContexts";
+import Copyright from "./Copyright";
+import {LOGIN_INIT, LOGIN, LOGIN_ERROR} from "../../actions";
+
+const Signin = () => {
+
+    const {state, dispatch} = useContext(AppContext);
+    const [open, setOpen] = useState(false);
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
+    const location = useLocation();
+    let {from} = location.state || {from: {pathname: "/top"}};
 
-    const onSubmit = async (data, e) => {
+    const onSubmit = useCallback(async (data, e) => {
         e.preventDefault();
-        const json = JSON.stringify(data);
-        console.log(json);
+        dispatch({
+            type: LOGIN_INIT,
+        });
         let axiosConfig = {
             headers: {
-                'content-type': 'application/json;charset=utf-8',
+                'Content-Type': 'application/json;charset=UTF-8',
             }
         };
-        await axios.post("/api/signup", json, axiosConfig);
-        history.push('/');
-    };
-
-    function Copyright() {
-        return (
-            <Typography variant="body2" color="textSecondary" align="center">
-                {'Copyright © '}
-                <a color="inherit" href="https://">
-                    your web site
-                </a>{' '}
-                {new Date().getFullYear()}
-                {'.'}
-            </Typography>
-        );
-    }
+        const json = JSON.stringify(data);
+        try {
+            await axios.post("/api/signin", json, axiosConfig);
+            dispatch({
+                type: LOGIN
+            });
+            history.replace(from);
+        } catch (e) {
+            console.log(e);
+            dispatch({
+                type: LOGIN_ERROR
+            });
+            setOpen(true);
+        }
+    }, [dispatch, from, history]);
 
     const useStyles = makeStyles(theme => ({
         paper: {
@@ -71,16 +78,30 @@ const Signup = () => {
 
     const classes = useStyles();
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <LockIcon/>
+                    <AccountCircleIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Sign in
                 </Typography>
+                {state.loading && !state.errorMessage ? (
+                    <span>loading...</span>
+                ) : (
+                    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                        <Alert severity="error" variant="filled" onClose={handleClose}>{state.errorMessage}</Alert>
+                    </Snackbar>
+                )}
                 <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -93,19 +114,6 @@ const Signup = () => {
                                        variant="outlined"
                                        fullWidth
                                        autoFocus
-                                       required
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField id="email"
-                                       label="Email Address"
-                                       name="email"
-                                       inputRef={register({required: true})}
-                                       error={!!errors.email}
-                                       helperText={errors.email ? '必ず入力してください' : ''}
-                                       variant="outlined"
-                                       fullWidth
-                                       autoComplete="email"
                                        required
                             />
                         </Grid>
@@ -130,12 +138,12 @@ const Signup = () => {
                             color="primary"
                             className={classes.submit}
                             disabled={!formState.dirty || formState.isSubmitting}>
-                        Sign Up
+                        Sign In
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link to="/" variant="body2">
-                                Already have an account? Sign in
+                            <Link to="/signup" variant="body2">
+                                Register new membership
                             </Link>
                         </Grid>
                     </Grid>
@@ -148,4 +156,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Signin;

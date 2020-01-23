@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {Redirect, Route} from 'react-router-dom';
-import AppContext from "../contexts/AppContexts";
+import AppContext from "../../contexts/AppContexts";
 
 const PrivateRoute = ({component: Component, ...rest}) => {
 

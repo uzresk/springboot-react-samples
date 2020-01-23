@@ -1,18 +1,19 @@
 import React, {useReducer} from 'react';
 import '../App.css';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
-import Signin from './Signin'
-import Signup from "./Signup";
+import Signin from './common/Signin'
+import Signup from "./common/Signup";
 import Top from './Top';
 import Next from './Next';
 import AppContext from "../contexts/AppContexts";
-import PrivateRoute from "./PrivateRoute";
+import PrivateRoute from "./common/PrivateRoute";
 
 import reducer from '../reducers'
 
 function App() {
 
     const initialState = {
+        loading: false,
         isAuthenticated: false,
         errorMessage: '',
     };
