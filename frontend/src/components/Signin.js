@@ -1,4 +1,6 @@
-import React, {useContext} from 'react';
+import axios from 'axios';
+
+import React, {useCallback, useContext, useState} from 'react';
 import {Link, useHistory, useLocation} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import Typography from "@material-ui/core/Typography";
@@ -11,31 +13,42 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import Snackbar from "@material-ui/core/Snackbar"
+import Alert from "@material-ui/lab/Alert"
 import AppContext from "../contexts/AppContexts";
-import {LOGIN} from "../actions";
+import {LOGIN, LOGIN_ERROR} from "../actions";
 
 const Signin = () => {
 
     const {state, dispatch} = useContext(AppContext);
+    const [open, setOpen] = useState(false);
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
     const location = useLocation();
     let {from} = location.state || {from: {pathname: "/top"}};
 
-    const onSubmit = async data => {
-        // const json = JSON.stringify(data)
-        // console.log(json);
-        // let axiosConfig = {
-        //     headers: {
-        //         'Content-Type': 'application/json;charset=UTF-8',
-        //     }
-        // };
-        // await axios.post("/api/signin", json, axiosConfig);
-        // history.push('/top');
-        dispatch({type: LOGIN});
-        console.log(from);
-        history.replace(from);
-    };
+    const onSubmit = useCallback(async data => {
+        let axiosConfig = {
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            }
+        };
+        const json = JSON.stringify(data);
+        console.log("login function" + json);
+        try {
+            await axios.post("/api/signin", json, axiosConfig);
+            dispatch({
+                type: LOGIN
+            });
+            history.replace(from);
+        } catch (e) {
+            console.log(e);
+            dispatch({
+                type: LOGIN_ERROR
+            });
+            setOpen(true);
+        }
+    }, [dispatch, from, history]);
 
     function Copyright() {
         return (
@@ -72,6 +85,13 @@ const Signin = () => {
 
     const classes = useStyles();
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -82,6 +102,14 @@ const Signin = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
+                {!state.errorMessage
+                    ? ('')
+                    : (
+                        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                            <Alert severity="error" variant="filled" onClose={handleClose}>{state.errorMessage}</Alert>
+                        </Snackbar>
+                    )
+                }
                 <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>

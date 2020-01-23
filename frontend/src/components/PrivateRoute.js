@@ -4,7 +4,7 @@ import AppContext from "../contexts/AppContexts";
 
 const PrivateRoute = ({component: Component, ...rest}) => {
 
-    const {state, dispatch} = useContext(AppContext);
+    const {state} = useContext(AppContext);
     console.log("LoginState: " + state.isAuthenticated);
     return (
         <Route

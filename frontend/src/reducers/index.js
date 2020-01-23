@@ -1,12 +1,17 @@
-import {LOGIN} from "../actions";
+import {LOGIN, LOGIN_ERROR} from "../actions";
 
 const signin = (state, action) => {
     switch (action.type) {
         case LOGIN:
-            console.log("login!!")
             return {
                 ...state,
                 isAuthenticated: true
+            };
+        case LOGIN_ERROR:
+            return {
+                ...state,
+                isAuthenticated: false,
+                errorMessage: "ログインに失敗しました。ID,パスワードを確認してください。",
             };
         default:
             return state;
