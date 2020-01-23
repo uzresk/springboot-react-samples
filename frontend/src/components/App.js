@@ -13,9 +13,10 @@ import reducer from '../reducers'
 function App() {
 
     const initialState = {
-        loading: false,
-        isAuthenticated: false,
-        errorMessage: '',
+        signin: {},
+        // loading: false,
+        // isAuthenticated: false,
+        // errorMessage: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 

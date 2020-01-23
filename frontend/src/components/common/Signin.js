@@ -24,8 +24,9 @@ import {LOGIN_INIT, LOGIN, LOGIN_ERROR} from "../../actions";
 const Signin = () => {
 
     const {state, dispatch} = useContext(AppContext);
-    const [open, setOpen] = useState(false);
+    const [messageOpen, setMessageOpen] = useState(false);
     const {register, errors, handleSubmit, formState} = useForm();
+    const {loading, errorMessage} = {...state.signin};
     const history = useHistory();
     const location = useLocation();
     let {from} = location.state || {from: {pathname: "/top"}};
@@ -35,6 +36,7 @@ const Signin = () => {
         dispatch({
             type: LOGIN_INIT,
         });
+        console.log(state);
         let axiosConfig = {
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
@@ -52,7 +54,7 @@ const Signin = () => {
             dispatch({
                 type: LOGIN_ERROR
             });
-            setOpen(true);
+            setMessageOpen(true);
         }
     }, [dispatch, from, history]);
 
@@ -82,7 +84,7 @@ const Signin = () => {
         if (reason === 'clickaway') {
             return;
         }
-        setOpen(false);
+        setMessageOpen(false);
     };
 
     return (
@@ -95,11 +97,11 @@ const Signin = () => {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                {state.loading && !state.errorMessage ? (
+                {loading && !errorMessage ? (
                     <span>loading...</span>
                 ) : (
-                    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                        <Alert severity="error" variant="filled" onClose={handleClose}>{state.errorMessage}</Alert>
+                    <Snackbar open={messageOpen} autoHideDuration={6000} onClose={handleClose}>
+                        <Alert severity="error" variant="filled" onClose={handleClose}>{errorMessage}</Alert>
                     </Snackbar>
                 )}
                 <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>

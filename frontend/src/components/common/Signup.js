@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import {useHistory} from 'react-router-dom';
 import {Link} from "react-router-dom";
 import {useForm} from "react-hook-form";
@@ -23,7 +23,7 @@ const Signup = () => {
     const {register, errors, handleSubmit, formState} = useForm();
     const history = useHistory();
 
-    const onSubmit = async (data, e) => {
+    const onSubmit = useCallback(async (data, e) => {
         e.preventDefault();
         const json = JSON.stringify(data);
         console.log(json);
@@ -34,7 +34,7 @@ const Signup = () => {
         };
         await axios.post("/api/signup", json, axiosConfig);
         history.push('/');
-    };
+    },[]);
 
     const useStyles = makeStyles(theme => ({
         paper: {
