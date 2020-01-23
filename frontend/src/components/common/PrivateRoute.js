@@ -5,12 +5,12 @@ import AppContext from "../../contexts/AppContexts";
 const PrivateRoute = ({component: Component, ...rest}) => {
 
     const {state} = useContext(AppContext);
-    console.log("LoginState: " + state.isAuthenticated);
+    console.log("LoginState: " + state.signin.isAuthenticated);
     return (
         <Route
             {...rest}
             render={({location}) =>
-                state.isAuthenticated ? (
+                state.signin.isAuthenticated ? (
                     <Component/>
                 ) : (
                     <Redirect to={{

@@ -14,9 +14,7 @@ function App() {
 
     const initialState = {
         signin: {},
-        // loading: false,
-        // isAuthenticated: false,
-        // errorMessage: '',
+        signup: {},
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 

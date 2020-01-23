@@ -36,7 +36,6 @@ const Signin = () => {
         dispatch({
             type: LOGIN_INIT,
         });
-        console.log(state);
         let axiosConfig = {
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8',

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {Link} from "react-router-dom";
 import {useForm} from "react-hook-form";
@@ -17,24 +17,48 @@ import {makeStyles} from "@material-ui/core";
 import LockIcon from "@material-ui/icons/Lock";
 
 import Copyright from "./Copyright";
+import AppContext from "../../contexts/AppContexts";
+import {SIGNUP, SIGNUP_ERROR, SIGNUP_INIT} from "../../actions";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 const Signup = () => {
 
+    const {state, dispatch} = useContext(AppContext);
+    const [messageOpen, setMessageOpen] = useState(false);
+    const [signupMessageOpen, setSignupMessageOpen] = useState(false);
     const {register, errors, handleSubmit, formState} = useForm();
+    const {loading, errorMessage, signupMessage} = {...state.signup};
     const history = useHistory();
 
     const onSubmit = useCallback(async (data, e) => {
         e.preventDefault();
+        const result = window.confirm('登録してもよろしいですか？');
+        if (!result) {
+            return;
+        }
+        dispatch({
+            type: SIGNUP_INIT,
+        });
         const json = JSON.stringify(data);
-        console.log(json);
         let axiosConfig = {
             headers: {
                 'content-type': 'application/json;charset=utf-8',
             }
         };
-        await axios.post("/api/signup", json, axiosConfig);
-        history.push('/');
-    },[]);
+        try {
+            await axios.post("/api/signup", json, axiosConfig);
+            dispatch({
+                type: SIGNUP,
+            });
+            setSignupMessageOpen(true);
+        } catch (e) {
+            console.log(e);
+            dispatch({
+                type: SIGNUP_ERROR
+            })
+        }
+    }, [dispatch]);
 
     const useStyles = makeStyles(theme => ({
         paper: {
@@ -58,6 +82,23 @@ const Signup = () => {
 
     const classes = useStyles();
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setMessageOpen(false);
+    };
+    const handleSignupMessageClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSignupMessageOpen(false);
+    };
+
+    const handleOnExit = () => {
+        history.replace('/');
+    };
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -68,6 +109,20 @@ const Signup = () => {
                 <Typography component="h1" variant="h5">
                     Sign up
                 </Typography>
+                {loading && !errorMessage ? (
+                    <span>loading...</span>
+                ) : (
+                    <Snackbar open={messageOpen} autoHideDuration={6000} onClose={handleClose}>
+                        <Alert severity="error" variant="filled" onClose={handleClose}>{errorMessage}</Alert>
+                    </Snackbar>
+                )}
+                {/*登録完了時のメッセージ*/}
+                {signupMessage ? (
+                    <Snackbar open={signupMessageOpen} autoHideDuration={3000} onClose={handleSignupMessageClose}
+                              onExit={handleOnExit}>
+                        <Alert severity="success" variant="filled" onClose={handleSignupMessageClose}>{signupMessage}</Alert>
+                    </Snackbar>
+                ) : ('')}
                 <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
