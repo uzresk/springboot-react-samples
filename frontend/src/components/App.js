@@ -3,7 +3,7 @@ import '../App.css';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import Signin from './common/Signin'
 import Signup from "./common/Signup";
-import Top from './Top';
+import Layout from './Layout';
 import Next from './Next';
 import AppContext from "../contexts/AppContexts";
 import PrivateRoute from "./common/PrivateRoute";
@@ -23,9 +23,9 @@ function App() {
             <div className="App">
                 <BrowserRouter>
                     <Switch>
-                        <Route exact path="/" component={Signin}/>
+                        <Route exact path="/signin" component={Signin}/>
                         <Route exact path="/signup" component={Signup}/>
-                        <PrivateRoute path="/top" component={Top}/>
+                        <PrivateRoute path="/" component={Layout}/>
                         <PrivateRoute path="/next" component={Next}/>
                     </Switch>
                 </BrowserRouter>

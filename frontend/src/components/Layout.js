@@ -1,12 +1,12 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 
-const Top = () => {
+const Layout = () => {
 
     return (
         <>
             <div>
-                Top
+                Dashboard Page
             </div>
             <div>
                 <Link to="/next">next page</Link>
@@ -15,4 +15,4 @@ const Top = () => {
     );
 };
 
-export default Top;
+export default Layout;
