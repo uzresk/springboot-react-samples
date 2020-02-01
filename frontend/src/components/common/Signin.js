@@ -5,7 +5,7 @@ import {Link, useHistory, useLocation} from "react-router-dom";
 import {useForm} from "react-hook-form";
 
 import Typography from "@material-ui/core/Typography";
-import {makeStyles} from "@material-ui/core";
+import useStyles from "./styles"
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Avatar from "@material-ui/core/Avatar";
@@ -30,6 +30,7 @@ const Signin = () => {
     const history = useHistory();
     const location = useLocation();
     let {from} = location.state || {from: {pathname: "/top"}};
+    const classes = useStyles();
 
     const onSubmit = useCallback(async (data, e) => {
         e.preventDefault();
@@ -56,28 +57,6 @@ const Signin = () => {
             setMessageOpen(true);
         }
     }, [dispatch, from, history]);
-
-    const useStyles = makeStyles(theme => ({
-        paper: {
-            marginTop: theme.spacing(8),
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        },
-        avatar: {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-            width: '100%', // Fix IE 11 issue.
-            marginTop: theme.spacing(3),
-        },
-        submit: {
-            margin: theme.spacing(3, 0, 2),
-        },
-    }));
-
-    const classes = useStyles();
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {

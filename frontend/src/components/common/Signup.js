@@ -13,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
-import {makeStyles} from "@material-ui/core";
+import useStyles from "./styles";
 import LockIcon from "@material-ui/icons/Lock";
 
 import Copyright from "./Copyright";
@@ -30,6 +30,7 @@ const Signup = () => {
     const {register, errors, handleSubmit, formState} = useForm();
     const {loading, errorMessage, signupMessage} = {...state.signup};
     const history = useHistory();
+    const classes = useStyles();
 
     const onSubmit = useCallback(async (data, e) => {
         e.preventDefault();
@@ -59,28 +60,6 @@ const Signup = () => {
             })
         }
     }, [dispatch]);
-
-    const useStyles = makeStyles(theme => ({
-        paper: {
-            marginTop: theme.spacing(8),
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        },
-        avatar: {
-            margin: theme.spacing(1),
-            backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-            width: '100%', // Fix IE 11 issue.
-            marginTop: theme.spacing(3),
-        },
-        submit: {
-            margin: theme.spacing(3, 0, 2),
-        },
-    }));
-
-    const classes = useStyles();
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
